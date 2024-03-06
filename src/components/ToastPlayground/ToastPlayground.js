@@ -4,39 +4,19 @@ import Button from '../Button';
 
 import styles from './ToastPlayground.module.css';
 import ToastShelf from '../ToastShelf/ToastShelf';
+import { ToastContext } from '../ToastProvider/ToastProvider';
 
 const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 
 function ToastPlayground() {
 	const [message, setMessage] = React.useState('');
 	const [toastVariant, setToastVariant] = React.useState('');
-	const [showToast, setShowToast] = React.useState(false);
-	const [toasts, setToasts] = React.useState([]);
-
+	const { addToast } = React.useContext(ToastContext);
 	const textRef = React.useRef();
 
-	const addToast = () => {
-		setToasts(() => {
-			let clonedToasts = toasts;
-			return [
-				...clonedToasts,
-				{
-					id: crypto.randomUUID(),
-					message: message,
-					variant: toastVariant,
-				},
-			];
-		});
-	};
-
-	const removeToast = (id) => {
-		const newToasts = toasts.filter((toast) => toast.id !== id);
-		setToasts(newToasts);
-	};
-
 	React.useEffect(() => {
-		console.log(toasts);
-	}, [toasts]);
+		textRef.current.focus();
+	}, []);
 
 	return (
 		<div className={styles.wrapper}>
@@ -45,12 +25,12 @@ function ToastPlayground() {
 				<h1>Toast Playground</h1>
 			</header>
 
-			<ToastShelf toasts={toasts} removeToast={removeToast} />
+			<ToastShelf />
 
 			<form
 				onSubmit={(event) => {
 					event.preventDefault();
-					addToast();
+					addToast(message, toastVariant);
 					setMessage('');
 					setToastVariant('notice');
 					textRef.current.focus();
